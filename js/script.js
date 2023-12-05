@@ -31,7 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // --------------------timer
-  const deadLine = "2023-12-05T00:40:00";
+  const deadLine = "2023-12-10T00:40:00";
   const setDate = (d) => {
     let timeDifference = Date.parse(d) - Date.now(),
       days = Math.floor(timeDifference / (1000 * 60 * 60 * 24)),
@@ -76,35 +76,58 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
   showDate(".timer", deadLine);
-});
 
-// ----------------------madal window
+  // ----------------------madal window
+  const modalWindowOpen = (buttonSelector, popupSelector, closeBtn) => {
+    const modalButtonsOpen = document.querySelectorAll(buttonSelector),
+      popup = document.querySelector(popupSelector),
+      closeModalBtn = popup.querySelector(closeBtn);
 
-const modalWindowOpen = (buttonSelector, popupSelector, closeBtn) => {
-  const modalButtonsOpen = document.querySelectorAll(buttonSelector),
-    popup = document.querySelector(popupSelector),
-    closeModalBtn = popup.querySelector(closeBtn);
+    // open
+    const openModal = () => {
+      popup.style.display = "block";
+      document.body.style.overflow = "hidden";
+    };
+    // close
+    const closeModal = () => {
+      popup.style.display = "none";
+      document.body.style.overflow = "";
+    };
 
-  // open
-  const openModal = () => {
-    popup.style.display = "block";
-    document.body.style.overflow = "hidden";
-  };
-  // close
-  const closeModal = () => {
-    popup.style.display = "none";
-    document.body.style.overflow = "";
-  };
-  modalButtonsOpen.forEach((elem) =>
-    elem.addEventListener("click", () => {
-      openModal();
-    })
-  );
+    modalButtonsOpen.forEach((elem) =>
+      elem.addEventListener("click", () => {
+        openModal();
+        clearInterval(timeoutOpenModal);
+      })
+    );
 
-  popup.addEventListener("click", (e) => {
-    if (e.target == popup || e.target == closeModalBtn) {
-      closeModal();
+    popup.addEventListener("click", (e) => {
+      if (e.target == popup || e.target == closeModalBtn) {
+        closeModal();
+      }
+    });
+
+    // escape close
+    document.body.addEventListener("keydown", (e) => {
+      if (e.key == "Escape" && popup.style.display == "block") {
+        closeModal();
+      }
+    });
+
+    // open at the end of the page
+    window.addEventListener("scroll", openPopupCoordinate);
+    function openPopupCoordinate() {
+      const fullDocumentSize = document.documentElement.scrollHeight,
+        wisibleSize = document.documentElement.clientHeight;
+      if (window.scrollY + wisibleSize >= fullDocumentSize) {
+        openModal();
+        removeEventListener("scroll", openPopupCoordinate);
+      }
     }
-  });
-};
-modalWindowOpen("[data-modal]", ".modal", ".modal__close");
+    // setTimeout open
+    const timeoutOpenModal = setTimeout(() => {
+      openModal();
+    }, 4000);
+  };
+  modalWindowOpen("[data-modal]", ".modal", ".modal__close");
+});

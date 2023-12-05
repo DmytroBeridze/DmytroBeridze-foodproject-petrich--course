@@ -77,3 +77,34 @@ window.addEventListener("DOMContentLoaded", () => {
   };
   showDate(".timer", deadLine);
 });
+
+// ----------------------madal window
+
+const modalWindowOpen = (buttonSelector, popupSelector, closeBtn) => {
+  const modalButtonsOpen = document.querySelectorAll(buttonSelector),
+    popup = document.querySelector(popupSelector),
+    closeModalBtn = popup.querySelector(closeBtn);
+
+  // open
+  const openModal = () => {
+    popup.style.display = "block";
+    document.body.style.overflow = "hidden";
+  };
+  // close
+  const closeModal = () => {
+    popup.style.display = "none";
+    document.body.style.overflow = "";
+  };
+  modalButtonsOpen.forEach((elem) =>
+    elem.addEventListener("click", () => {
+      openModal();
+    })
+  );
+
+  popup.addEventListener("click", (e) => {
+    if (e.target == popup || e.target == closeModalBtn) {
+      closeModal();
+    }
+  });
+};
+modalWindowOpen("[data-modal]", ".modal", ".modal__close");

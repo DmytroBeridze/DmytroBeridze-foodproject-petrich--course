@@ -130,4 +130,81 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 4000);
   };
   modalWindowOpen("[data-modal]", ".modal", ".modal__close");
+
+  // ----------------------menu cards
+  const menuCardsData = [
+    {
+      img: "img/tabs/vegy.jpg",
+      alt: "vegy",
+      subtitle: 'Меню "Фитнес"',
+      description:
+        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+      price: "29",
+    },
+    {
+      img: "img/tabs/elite.jpg",
+      alt: "elite",
+      subtitle: "Меню “Премиум”",
+      description:
+        "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
+      price: "50",
+    },
+    {
+      img: "img/tabs/post.jpg",
+      alt: "post",
+      subtitle: 'Меню "Постное"',
+      description:
+        "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля,  овса, кокоса или гречки, правильное количество белков за счет тофу  и импортных вегетарианских стейков.",
+      price: "30",
+    },
+  ];
+
+  class MenuCards {
+    constructor(containerSelector, img, alt, subtitle, description, price) {
+      this.containerSelector = document.querySelector(containerSelector);
+      this.img = img;
+      this.alt = alt;
+      this.subtitle = subtitle;
+      this.description = description;
+      this.price = price;
+      this.transfer = 36.5;
+      this.changeCurrency();
+    }
+
+    createCards() {
+      const cardItem = `
+          <div class="menu__item">
+            <img src="${this.img}" alt="${this.alt}" />
+            <h3 class="menu__item-subtitle">${this.subtitle}</h3>
+            <div class="menu__item-descr">
+              ${this.description}
+            </div>
+            <div class="menu__item-divider"></div>
+            <div class="menu__item-price">
+              <div class="menu__item-cost">Цена:</div>
+              <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+            </div>
+          </div>
+`;
+      this.containerSelector.innerHTML += cardItem;
+    }
+
+    changeCurrency() {
+      this.price = this.price * this.transfer;
+    }
+  }
+
+  menuCardsData.forEach((elem) => {
+    let { img, alt, subtitle, description, price } = elem;
+    new MenuCards(
+      ".menu__field .container",
+      img,
+      alt,
+      subtitle,
+      description,
+      price
+    ).createCards();
+  });
+
+  // -----------
 });

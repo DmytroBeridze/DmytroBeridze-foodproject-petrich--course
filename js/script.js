@@ -212,7 +212,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ).createCards();
   });
 
-  // -----------------------XMLHttp-send-form
+  // -----------------------fetch-send-form
 
   const statusMessage = {
     load: "./img/modal/spinner.svg",
@@ -220,21 +220,14 @@ window.addEventListener("DOMContentLoaded", () => {
     error: "Error",
   };
 
-  const xmlRequest = (method, url, data) => {
-    return new Promise((resolve, reject) => {
-      const request = new XMLHttpRequest();
-      request.open(method, url, data);
-      request.setRequestHeader("Content-type", "application/json");
-      request.addEventListener("load", () => {
-        if (request.status >= 400) {
-          reject(new Error("Error request"));
-        } else resolve(request.response);
-      });
-      request.addEventListener("error", () => {
-        reject(new Error("Error2 request"));
-      });
-      request.send(JSON.stringify(data));
+  const fetchRequest = async (method, url, data) => {
+    const response = await fetch(url, {
+      method: method,
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(data),
     });
+
+    return await response.text();
   };
 
   const prevWindow = document.querySelector(".modal__dialog"),
@@ -267,8 +260,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const formData = new FormData(form),
           jsonFormData = Object.fromEntries(formData);
-
-        xmlRequest(method, url, jsonFormData)
+        fetchRequest(method, url, jsonFormData)
           .then((res) => {
             showStatusFormRequest(statusMessage.success, openModal);
             console.log(res);

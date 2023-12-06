@@ -100,9 +100,12 @@ window.addEventListener("DOMContentLoaded", () => {
         clearInterval(timeoutOpenModal);
       })
     );
-
     popup.addEventListener("click", (e) => {
-      if (e.target == popup || e.target == closeModalBtn) {
+      if (
+        e.target == popup ||
+        e.target.classList.contains(closeBtn.replace(".", ""))
+      ) {
+        // if (e.target == popup || e.target == closeModalBtn) {
         closeModal();
       }
     });
@@ -127,7 +130,10 @@ window.addEventListener("DOMContentLoaded", () => {
     // setTimeout open
     const timeoutOpenModal = setTimeout(() => {
       openModal();
-    }, 4000);
+    }, 3000);
+
+    // вызов функции отправки формы
+    sendForm("POST", "./server.php", closeModal, openModal);
   };
   modalWindowOpen("[data-modal]", ".modal", ".modal__close");
 
@@ -206,5 +212,82 @@ window.addEventListener("DOMContentLoaded", () => {
     ).createCards();
   });
 
-  // -----------
+  // -----------------------XMLHttp-send-form
+
+  const statusMessage = {
+    load: "./img/modal/spinner.svg",
+    success: "Success",
+    error: "Error",
+  };
+
+  const xmlRequest = (method, url, data) => {
+    return new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest();
+      request.open(method, url, data);
+      request.setRequestHeader("Content-type", "application/json");
+      request.addEventListener("load", () => {
+        if (request.status >= 400) {
+          reject(new Error("Error request"));
+        } else resolve(request.response);
+      });
+      request.addEventListener("error", () => {
+        reject(new Error("Error2 request"));
+      });
+      request.send(JSON.stringify(data));
+    });
+  };
+
+  const prevWindow = document.querySelector(".modal__dialog"),
+    container = document.querySelector(".modal"),
+    messageWindow = document.createElement("div");
+
+  const showStatusFormRequest = (data, openModal) => {
+    prevWindow.classList.add("tabsHide");
+    messageWindow.classList.add("modal__dialog");
+    messageWindow.innerHTML = `
+    <div class="modal__content">
+    <div data-close="clo" class="modal__close">×</div>
+    <div class="modal__title">${data}</div>
+    </div>
+    `;
+    container.append(messageWindow);
+    openModal();
+  };
+
+  function sendForm(method, url, closeModal, openModal) {
+    const allForms = document.forms;
+
+    for (let form of allForms) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const spinnerContainer = document.createElement("img");
+        spinnerContainer.style.cssText = "display:block; margin:20px auto";
+        spinnerContainer.setAttribute("src", statusMessage.load);
+        form.insertAdjacentElement("afterend", spinnerContainer);
+
+        const formData = new FormData(form),
+          jsonFormData = Object.fromEntries(formData);
+
+        xmlRequest(method, url, jsonFormData)
+          .then((res) => {
+            showStatusFormRequest(statusMessage.success, openModal);
+            console.log(res);
+          })
+          .catch((error) => {
+            showStatusFormRequest(statusMessage.error, openModal);
+            console.log(error);
+          })
+          .finally(() => {
+            setTimeout(() => {
+              messageWindow.remove();
+              spinnerContainer.remove();
+              prevWindow.classList.remove("tabsHide");
+              prevWindow.classList.add("tabsShow");
+              form.reset();
+              closeModal();
+            }, 2000);
+          });
+      });
+    }
+  }
 });

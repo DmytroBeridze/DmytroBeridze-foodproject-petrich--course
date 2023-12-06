@@ -31,7 +31,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // --------------------timer
-  const deadLine = "2023-12-05T00:40:00";
+  const deadLine = "2023-12-10T00:40:00";
   const setDate = (d) => {
     let timeDifference = Date.parse(d) - Date.now(),
       days = Math.floor(timeDifference / (1000 * 60 * 60 * 24)),
@@ -76,4 +76,218 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
   showDate(".timer", deadLine);
+
+  // ----------------------madal window
+  const modalWindowOpen = (buttonSelector, popupSelector, closeBtn) => {
+    const modalButtonsOpen = document.querySelectorAll(buttonSelector),
+      popup = document.querySelector(popupSelector),
+      closeModalBtn = popup.querySelector(closeBtn);
+
+    // open
+    const openModal = () => {
+      popup.style.display = "block";
+      document.body.style.overflow = "hidden";
+    };
+    // close
+    const closeModal = () => {
+      popup.style.display = "none";
+      document.body.style.overflow = "";
+    };
+
+    modalButtonsOpen.forEach((elem) =>
+      elem.addEventListener("click", () => {
+        openModal();
+        clearInterval(timeoutOpenModal);
+      })
+    );
+    popup.addEventListener("click", (e) => {
+      if (
+        e.target == popup ||
+        e.target.classList.contains(closeBtn.replace(".", ""))
+      ) {
+        // if (e.target == popup || e.target == closeModalBtn) {
+        closeModal();
+      }
+    });
+
+    // escape close
+    document.body.addEventListener("keydown", (e) => {
+      if (e.key == "Escape" && popup.style.display == "block") {
+        closeModal();
+      }
+    });
+
+    // open at the end of the page
+    window.addEventListener("scroll", openPopupCoordinate);
+    function openPopupCoordinate() {
+      const fullDocumentSize = document.documentElement.scrollHeight,
+        wisibleSize = document.documentElement.clientHeight;
+      if (window.scrollY + wisibleSize >= fullDocumentSize) {
+        openModal();
+        removeEventListener("scroll", openPopupCoordinate);
+      }
+    }
+    // setTimeout open
+    const timeoutOpenModal = setTimeout(() => {
+      openModal();
+    }, 3000);
+
+    // вызов функции отправки формы
+    sendForm("POST", "./server.php", closeModal, openModal);
+  };
+  modalWindowOpen("[data-modal]", ".modal", ".modal__close");
+
+  // ----------------------menu cards
+  const menuCardsData = [
+    {
+      img: "img/tabs/vegy.jpg",
+      alt: "vegy",
+      subtitle: 'Меню "Фитнес"',
+      description:
+        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+      price: "29",
+    },
+    {
+      img: "img/tabs/elite.jpg",
+      alt: "elite",
+      subtitle: "Меню “Премиум”",
+      description:
+        "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
+      price: "50",
+    },
+    {
+      img: "img/tabs/post.jpg",
+      alt: "post",
+      subtitle: 'Меню "Постное"',
+      description:
+        "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля,  овса, кокоса или гречки, правильное количество белков за счет тофу  и импортных вегетарианских стейков.",
+      price: "30",
+    },
+  ];
+
+  class MenuCards {
+    constructor(containerSelector, img, alt, subtitle, description, price) {
+      this.containerSelector = document.querySelector(containerSelector);
+      this.img = img;
+      this.alt = alt;
+      this.subtitle = subtitle;
+      this.description = description;
+      this.price = price;
+      this.transfer = 36.5;
+      this.changeCurrency();
+    }
+
+    createCards() {
+      const cardItem = `
+          <div class="menu__item">
+            <img src="${this.img}" alt="${this.alt}" />
+            <h3 class="menu__item-subtitle">${this.subtitle}</h3>
+            <div class="menu__item-descr">
+              ${this.description}
+            </div>
+            <div class="menu__item-divider"></div>
+            <div class="menu__item-price">
+              <div class="menu__item-cost">Цена:</div>
+              <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+            </div>
+          </div>
+`;
+      this.containerSelector.innerHTML += cardItem;
+    }
+
+    changeCurrency() {
+      this.price = this.price * this.transfer;
+    }
+  }
+
+  menuCardsData.forEach((elem) => {
+    let { img, alt, subtitle, description, price } = elem;
+    new MenuCards(
+      ".menu__field .container",
+      img,
+      alt,
+      subtitle,
+      description,
+      price
+    ).createCards();
+  });
+
+  // -----------------------XMLHttp-send-form
+
+  const statusMessage = {
+    load: "./img/modal/spinner.svg",
+    success: "Success",
+    error: "Error",
+  };
+
+  const xmlRequest = (method, url, data) => {
+    return new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest();
+      request.open(method, url, data);
+      request.setRequestHeader("Content-type", "application/json");
+      request.addEventListener("load", () => {
+        if (request.status >= 400) {
+          reject(new Error("Error request"));
+        } else resolve(request.response);
+      });
+      request.addEventListener("error", () => {
+        reject(new Error("Error2 request"));
+      });
+      request.send(JSON.stringify(data));
+    });
+  };
+
+  const prevWindow = document.querySelector(".modal__dialog"),
+    container = document.querySelector(".modal"),
+    messageWindow = document.createElement("div");
+
+  const showStatusFormRequest = (data, openModal) => {
+    prevWindow.classList.add("tabsHide");
+    messageWindow.classList.add("modal__dialog");
+    messageWindow.innerHTML = `
+    <div class="modal__content">
+    <div data-close="clo" class="modal__close">×</div>
+    <div class="modal__title">${data}</div>
+    </div>
+    `;
+    container.append(messageWindow);
+    openModal();
+  };
+
+  function sendForm(method, url, closeModal, openModal) {
+    const allForms = document.forms;
+
+    for (let form of allForms) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const spinnerContainer = document.createElement("img");
+        spinnerContainer.style.cssText = "display:block; margin:20px auto";
+        spinnerContainer.setAttribute("src", statusMessage.load);
+        form.insertAdjacentElement("afterend", spinnerContainer);
+
+        const formData = new FormData(form),
+          jsonFormData = Object.fromEntries(formData);
+
+        xmlRequest(method, url, jsonFormData)
+          .then((res) => {
+            showStatusFormRequest(statusMessage.success, openModal);
+            console.log(res);
+          })
+          .catch((error) => {
+            showStatusFormRequest(statusMessage.error, openModal);
+            console.log(error);
+          })
+          .finally(() => {
+            setTimeout(() => {
+              messageWindow.remove();
+              spinnerContainer.remove();
+              prevWindow.classList.remove("tabsHide");
+              prevWindow.classList.add("tabsShow");
+              form.reset();
+              closeModal();
+            }, 2000);
+          });
+      });
+    }
+  }
 });

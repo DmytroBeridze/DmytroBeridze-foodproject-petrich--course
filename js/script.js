@@ -138,32 +138,41 @@ window.addEventListener("DOMContentLoaded", () => {
   modalWindowOpen("[data-modal]", ".modal", ".modal__close");
 
   // ----------------------menu cards
-  const menuCardsData = [
-    {
-      img: "img/tabs/vegy.jpg",
-      alt: "vegy",
-      subtitle: 'Меню "Фитнес"',
-      description:
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-      price: "29",
-    },
-    {
-      img: "img/tabs/elite.jpg",
-      alt: "elite",
-      subtitle: "Меню “Премиум”",
-      description:
-        "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-      price: "50",
-    },
-    {
-      img: "img/tabs/post.jpg",
-      alt: "post",
-      subtitle: 'Меню "Постное"',
-      description:
-        "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля,  овса, кокоса или гречки, правильное количество белков за счет тофу  и импортных вегетарианских стейков.",
-      price: "30",
-    },
-  ];
+  // const menuCardsData = [
+  //   {
+  //     img: "img/tabs/vegy.jpg",
+  //     alt: "vegy",
+  //     subtitle: 'Меню "Фитнес"',
+  //     description:
+  //       'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+  //     price: "29",
+  //   },
+  //   {
+  //     img: "img/tabs/elite.jpg",
+  //     alt: "elite",
+  //     subtitle: "Меню “Премиум”",
+  //     description:
+  //       "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
+  //     price: "50",
+  //   },
+  //   {
+  //     img: "img/tabs/post.jpg",
+  //     alt: "post",
+  //     subtitle: 'Меню "Постное"',
+  //     description:
+  //       "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля,  овса, кокоса или гречки, правильное количество белков за счет тофу  и импортных вегетарианских стейков.",
+  //     price: "30",
+  //   },
+  // ];
+
+  const fetchMenuCards = async (url, method) => {
+    const response = await fetch(url, {
+      method: method,
+      headers: { "Content-type": "application/json" },
+    });
+    const res = await response.json();
+    return res;
+  };
 
   class MenuCards {
     constructor(containerSelector, img, alt, subtitle, description, price) {
@@ -199,18 +208,19 @@ window.addEventListener("DOMContentLoaded", () => {
       this.price = this.price * this.transfer;
     }
   }
-
-  menuCardsData.forEach((elem) => {
-    let { img, alt, subtitle, description, price } = elem;
-    new MenuCards(
-      ".menu__field .container",
-      img,
-      alt,
-      subtitle,
-      description,
-      price
-    ).createCards();
-  });
+  fetchMenuCards("http://localhost:3000/menu", "GET").then((data) =>
+    data.forEach((elem) => {
+      let { img, altimg, title, descr, price } = elem;
+      new MenuCards(
+        ".menu__field .container",
+        img,
+        altimg,
+        title,
+        descr,
+        price
+      ).createCards();
+    })
+  );
 
   // -----------------------fetch-send-form
 

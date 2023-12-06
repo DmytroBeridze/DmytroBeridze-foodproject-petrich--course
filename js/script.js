@@ -201,7 +201,6 @@ window.addEventListener("DOMContentLoaded", () => {
     .catch((error) => console.log(error.message));
 
   // -----------------------fetch-send-form
-
   const statusMessage = {
     load: "./img/modal/spinner.svg",
     success: "Success",
@@ -270,4 +269,43 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+  // ----------------simple slider
+  const slides = document.querySelectorAll(".offer__slide"),
+    nextArrow = document.querySelector(".offer__slider-next"),
+    prevArrow = document.querySelector(".offer__slider-prev"),
+    currentCount = document.querySelector("#current"),
+    totalCount = document.querySelector("#total");
+  let slideCount = 1;
+  totalCount.textContent = slides.length.toString().padStart(2, 0);
+
+  const toggleSlides = (c = 1) => {
+    slides.forEach((elem) => elem.classList.add("tabsHide"));
+
+    if (c > slides.length) {
+      slideCount = 1;
+    }
+    if (c < 1) {
+      slideCount = slides.length;
+    }
+    slides[slideCount - 1].classList.remove("tabsHide");
+    slides[slideCount - 1].classList.add("tabsShow");
+
+    currentCount.textContent = slideCount.toString().padStart(2, 0);
+  };
+  toggleSlides();
+
+  const plusSlides = (c) => {
+    toggleSlides((slideCount += c));
+  };
+  nextArrow.addEventListener("click", () => {
+    // slideCount++;
+    // toggleSlides(slideCount);
+    plusSlides(+1);
+  });
+
+  prevArrow.addEventListener("click", () => {
+    // slideCount--;
+    // toggleSlides(slideCount);
+    plusSlides(-1);
+  });
 });

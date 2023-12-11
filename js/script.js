@@ -133,37 +133,22 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 3000);
 
     // вызов функции отправки формы
-    sendForm("POST", "./server.php", closeModal, openModal);
+    sendForm("POST", "http://localhost:3000/requests", closeModal, openModal);
+    // sendForm("POST", "./server.php", closeModal, openModal);
   };
   modalWindowOpen("[data-modal]", ".modal", ".modal__close");
 
   // ----------------------menu cards
-  const menuCardsData = [
-    {
-      img: "img/tabs/vegy.jpg",
-      alt: "vegy",
-      subtitle: 'Меню "Фитнес"',
-      description:
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-      price: "29",
-    },
-    {
-      img: "img/tabs/elite.jpg",
-      alt: "elite",
-      subtitle: "Меню “Премиум”",
-      description:
-        "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-      price: "50",
-    },
-    {
-      img: "img/tabs/post.jpg",
-      alt: "post",
-      subtitle: 'Меню "Постное"',
-      description:
-        "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля,  овса, кокоса или гречки, правильное количество белков за счет тофу  и импортных вегетарианских стейков.",
-      price: "30",
-    },
-  ];
+  const fetchMenuCards = async (url, method) => {
+    const response = await fetch(url, {
+      method: method,
+      headers: { "Content-type": "application/json" },
+    });
+    if (!response.ok) {
+      throw new Error(`Error request: ${response.status}`);
+    }
+    return await response.json();
+  };
 
   class MenuCards {
     constructor(containerSelector, img, alt, subtitle, description, price) {
@@ -199,21 +184,23 @@ window.addEventListener("DOMContentLoaded", () => {
       this.price = this.price * this.transfer;
     }
   }
-
-  menuCardsData.forEach((elem) => {
-    let { img, alt, subtitle, description, price } = elem;
-    new MenuCards(
-      ".menu__field .container",
-      img,
-      alt,
-      subtitle,
-      description,
-      price
-    ).createCards();
-  });
+  fetchMenuCards("http://localhost:3000/menu", "GET")
+    .then((data) =>
+      data.forEach(({ img, altimg, title, descr, price }) => {
+        // let { img, altimg, title, descr, price } = elem;
+        new MenuCards(
+          ".menu__field .container",
+          img,
+          altimg,
+          title,
+          descr,
+          price
+        ).createCards();
+      })
+    )
+    .catch((error) => console.log(error.message));
 
   // -----------------------fetch-send-form
-
   const statusMessage = {
     load: "./img/modal/spinner.svg",
     success: "Success",
@@ -282,4 +269,43 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+  // ----------------simple slider
+  const slides = document.querySelectorAll(".offer__slide"),
+    nextArrow = document.querySelector(".offer__slider-next"),
+    prevArrow = document.querySelector(".offer__slider-prev"),
+    currentCount = document.querySelector("#current"),
+    totalCount = document.querySelector("#total");
+  let slideCount = 1;
+  totalCount.textContent = slides.length.toString().padStart(2, 0);
+
+  const toggleSlides = (c = 1) => {
+    slides.forEach((elem) => elem.classList.add("tabsHide"));
+
+    if (c > slides.length) {
+      slideCount = 1;
+    }
+    if (c < 1) {
+      slideCount = slides.length;
+    }
+    slides[slideCount - 1].classList.remove("tabsHide");
+    slides[slideCount - 1].classList.add("tabsShow");
+
+    currentCount.textContent = slideCount.toString().padStart(2, 0);
+  };
+  toggleSlides();
+
+  const plusSlides = (c) => {
+    toggleSlides((slideCount += c));
+  };
+  nextArrow.addEventListener("click", () => {
+    // slideCount++;
+    // toggleSlides(slideCount);
+    plusSlides(+1);
+  });
+
+  prevArrow.addEventListener("click", () => {
+    // slideCount--;
+    // toggleSlides(slideCount);
+    plusSlides(-1);
+  });
 });

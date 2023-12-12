@@ -269,43 +269,54 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
-  // ----------------simple slider
-  const slides = document.querySelectorAll(".offer__slide"),
-    nextArrow = document.querySelector(".offer__slider-next"),
-    prevArrow = document.querySelector(".offer__slider-prev"),
-    currentCount = document.querySelector("#current"),
-    totalCount = document.querySelector("#total");
-  let slideCount = 1;
-  totalCount.textContent = slides.length.toString().padStart(2, 0);
+  // ----------------complex slider
+  const mainSlider = document.querySelector(".offer__slider"),
+    offerSliderWrapper = document.querySelector(".offer__slider-wrapper"),
+    offerSlides = document.querySelectorAll(".offer__slide"),
+    sliderPrev = document.querySelector(".offer__slider-prev"),
+    sliderNext = document.querySelector(".offer__slider-next"),
+    currentCounter = document.querySelector("#current"),
+    totaltCounter = document.querySelector("#total"),
+    width = mainSlider.clientWidth;
+  let counter = 0,
+    pageCount = 0;
+  mainSlider.style.overflow = "hidden";
+  offerSliderWrapper.style.width = 100 * offerSlides.length + "%";
+  offerSliderWrapper.style.display = "flex";
+  offerSliderWrapper.style.transition = "1s";
 
-  const toggleSlides = (c = 1) => {
-    slides.forEach((elem) => elem.classList.add("tabsHide"));
+  totaltCounter.textContent = offerSlides.length.toString().padStart(2, 0);
+  currentCounter.textContent = "01";
+  // const totalCounterToggle = (c = "0") => {
+  //   currentCounter.textContent = (c + 1).toString().padStart(2, 0);
+  // };
+  // totalCounterToggle();
 
-    if (c > slides.length) {
-      slideCount = 1;
+  const firstPageToggle = (p) => {
+    if (p > width * (offerSlides.length - 1)) {
+      pageCount = 0;
+      counter = 0;
     }
-    if (c < 1) {
-      slideCount = slides.length;
+    if (p < 0) {
+      pageCount = width * (offerSlides.length - 1);
+      counter = offerSlides.length - 1;
     }
-    slides[slideCount - 1].classList.remove("tabsHide");
-    slides[slideCount - 1].classList.add("tabsShow");
-
-    currentCount.textContent = slideCount.toString().padStart(2, 0);
+    currentCounter.textContent = (counter + 1).toString().padStart(2, 0);
   };
-  toggleSlides();
-
-  const plusSlides = (c) => {
-    toggleSlides((slideCount += c));
-  };
-  nextArrow.addEventListener("click", () => {
-    // slideCount++;
-    // toggleSlides(slideCount);
-    plusSlides(+1);
+  // next
+  sliderNext.addEventListener("click", () => {
+    counter++;
+    pageCount = counter * width;
+    firstPageToggle(pageCount);
+    // totalCounterToggle(counter);
+    offerSliderWrapper.style.transform = `translateX(-${pageCount}px)`;
   });
-
-  prevArrow.addEventListener("click", () => {
-    // slideCount--;
-    // toggleSlides(slideCount);
-    plusSlides(-1);
+  // prev
+  sliderPrev.addEventListener("click", () => {
+    counter--;
+    pageCount = counter * width;
+    firstPageToggle(pageCount);
+    // totalCounterToggle(counter);
+    offerSliderWrapper.style.transform = `translateX(-${pageCount}px)`;
   });
 });

@@ -352,4 +352,151 @@ window.addEventListener("DOMContentLoaded", () => {
       currentCounter.textContent = (+counter + 1).toString().padStart(2, 0);
     }
   });
+
+  // -----------calculator
+  // const personGenderBlock = document.querySelector("#gender"),
+  //   personConstitutionBlock = document.querySelector(
+  //     ".calculating__choose_medium"
+  //   ),
+  //   personAtivityBlock = document.querySelector(".calculating__choose_big"),
+  //   outputCaloriesResultContainer = document.querySelector(
+  //     ".calculating__result"
+  //   );
+  // let userGender, userHeight, userWeight, userAge, userActivity, calcResult;
+
+  // const caloriesCalculating = () => {
+  //   if (
+  //     !userGender ||
+  //     !userHeight ||
+  //     !userWeight ||
+  //     !userAge ||
+  //     !userActivity
+  //   ) {
+  //     outputCaloriesResultContainer.textContent = "Enter your data";
+  //     return;
+  //   }
+
+  //   if (userGender == "male") {
+  //     calcResult =
+  //       (88.36 + 13.4 * userWeight + 4.8 * userHeight - 5.7 * userAge) *
+  //       userActivity;
+  //     outputCaloriesResultContainer.textContent = calcResult;
+  //   } else
+  //     calcResult =
+  //       (447.6 + 9.2 * userWeight + 3.1 * userHeight - 4.3 * userAge) *
+  //       userActivity;
+  //   outputCaloriesResultContainer.textContent = calcResult;
+  //   console.log(userGender);
+  // };
+
+  // const collectUserData = (selector) => {
+  //   const container = document.querySelector(selector);
+  //   const dataItems = container.querySelectorAll(".calculating__choose-item");
+
+  //   dataItems.forEach((elem) => {
+  //     elem.addEventListener("click", (e) => {
+  //       if (e.target.getAttribute("data-userInfo")) {
+  //         userActivity = +e.target.getAttribute("data-userInfo");
+  //       } else userGender = e.target.getAttribute("id");
+  //       caloriesCalculating();
+  //       dataItems.forEach((elem) =>
+  //         elem.classList.remove("calculating__choose-item_active")
+  //       );
+  //       e.target.classList.add("calculating__choose-item_active");
+  //     });
+  //   });
+  // };
+
+  // const collectUserConstitution = (selector) => {
+  //   const inputs = document.querySelectorAll(selector);
+  //   inputs.forEach((elem) => {
+  //     elem.addEventListener("input", (e) => {
+  //       switch (e.target.getAttribute("id")) {
+  //         case "height":
+  //           userHeight = +elem.value;
+  //           break;
+  //         case "weight":
+  //           userWeight = +elem.value;
+  //           break;
+  //         case "age":
+  //           userAge = +elem.value;
+  //       }
+  //       // console.log(userHeight, userWeight, userAge);
+  //       caloriesCalculating();
+  //     });
+  //   });
+  // };
+  // collectUserData("#gender");
+  // collectUserData(".calculating__choose_big");
+  // collectUserConstitution(".calculating__choose_medium input");
+
+  const calculatingResult = document.querySelector(".calculating__result span");
+  let userGender = "female",
+    userHeight,
+    userWeight,
+    userAge,
+    userActivity = 1.375;
+
+  const caloriesCalculate = () => {
+    if (
+      !userGender ||
+      !userHeight ||
+      !userWeight ||
+      !userAge ||
+      !userActivity
+    ) {
+      calculatingResult.innerHTML = "_ _";
+      return;
+    }
+    if (userGender == "male") {
+      calculatingResult.innerHTML = Math.round(
+        (88.36 + 13.4 * userWeight + 4.8 * userHeight - 5.7 * userAge) *
+          userActivity
+      );
+    } else
+      calculatingResult.innerHTML = Math.round(
+        (447.6 + 9.2 * userWeight + 3.1 * userHeight - 4.3 * userAge) *
+          userActivity
+      );
+  };
+  caloriesCalculate();
+
+  const getUserData = (selector, activeClass) => {
+    const container = document.querySelector(selector),
+      elements = document.querySelectorAll(`${selector} div`);
+    container.addEventListener("click", (e) => {
+      if (e.target !== container) {
+        if (e.target.getAttribute("data-userInfo")) {
+          userActivity = +e.target.getAttribute("data-userInfo");
+        } else userGender = e.target.getAttribute("id");
+        elements.forEach((elem) => elem.classList.remove(activeClass));
+        e.target.classList.add(activeClass);
+      }
+      caloriesCalculate();
+    });
+  };
+  getUserData("#gender", "calculating__choose-item_active");
+  getUserData(".calculating__choose_big", "calculating__choose-item_active");
+
+  const getUserConstitution = (selector) => {
+    const inputs = document.querySelectorAll(`${selector} input`);
+    inputs.forEach((elem) =>
+      elem.addEventListener("input", (e) => {
+        switch (e.target.getAttribute("id")) {
+          case "height":
+            userHeight = +e.target.value;
+            break;
+          case "weight":
+            userWeight = +e.target.value;
+            break;
+          case "age":
+            userAge = +e.target.value;
+            break;
+        }
+        caloriesCalculate();
+      })
+    );
+  };
+
+  getUserConstitution(".calculating__choose_medium");
 });

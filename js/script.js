@@ -355,11 +355,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // -----------calculator
   const calculatingResult = document.querySelector(".calculating__result span");
-  let userGender = "female",
-    userHeight,
-    userWeight,
-    userAge,
-    userActivity = 1.375;
+  console.log(localStorage.getItem("userOptions")?.userGender);
+
+  let userGender =
+      JSON.parse(localStorage.getItem("userOptions"))?.userGender || "female",
+    userHeight =
+      JSON.parse(localStorage.getItem("userOptions"))?.userHeight || "",
+    userWeight =
+      JSON.parse(localStorage.getItem("userOptions"))?.userWeight || "",
+    userAge = JSON.parse(localStorage.getItem("userOptions"))?.userAge || "",
+    userActivity =
+      JSON.parse(localStorage.getItem("userOptions"))?.userActivity || 1.375;
+
+  // JSON.parse(localStorage.getItem("userOptions")).userActivity || 1.375;
 
   const caloriesCalculate = () => {
     if (
@@ -382,8 +390,42 @@ window.addEventListener("DOMContentLoaded", () => {
         (447.6 + 9.2 * userWeight + 3.1 * userHeight - 4.3 * userAge) *
           userActivity
       );
+    storageDataet();
   };
   caloriesCalculate();
+
+  // getStorage
+  function storageDataet() {
+    const userDataLcalSave = {
+      userGender,
+      userHeight,
+      userWeight,
+      userAge,
+      userActivity,
+    };
+
+    localStorage.setItem("userOptions", JSON.stringify(userDataLcalSave));
+
+    document
+      .querySelector(".calculating__choose-item")
+      .classList.remove("calculating__choose-item_active");
+
+    document
+      .querySelector(`#${userDataLcalSave.userGender}`)
+      .classList.add("calculating__choose-item_active");
+
+    document
+      .querySelector(
+        `.calculating__choose-item[data-userInfo= "${userDataLcalSave.userActivity}" ]`
+      )
+      .classList.add("calculating__choose-item_active");
+
+    document.querySelector("#height").value = userHeight;
+    document.querySelector("#weight").value = userWeight;
+    document.querySelector("#age").value = userAge;
+  }
+  storageDataet();
+  // ---//getStorage
 
   const getUserData = (selector, activeClass) => {
     const container = document.querySelector(selector),
@@ -406,6 +448,11 @@ window.addEventListener("DOMContentLoaded", () => {
     const inputs = document.querySelectorAll(`${selector} input`);
     inputs.forEach((elem) =>
       elem.addEventListener("input", (e) => {
+        // проверка на ввод цифр
+        if (e.target.value.match(/\D/g)) {
+          elem.style.border = "1px solid red";
+        } else elem.style.border = "none";
+
         switch (e.target.getAttribute("id")) {
           case "height":
             userHeight = +e.target.value;

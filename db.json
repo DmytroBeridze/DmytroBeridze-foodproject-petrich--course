@@ -22,21 +22,5 @@
       "price": 14
     }
   ],
-  "requests": [
-    {
-      "name": "Qubiq",
-      "phone": "1",
-      "id": 1
-    },
-    {
-      "name": "Dimon",
-      "phone": "2345636",
-      "id": 2
-    },
-    {
-      "name": "Dimon",
-      "phone": "12342345",
-      "id": 3
-    }
-  ]
+  "requests": []
 }

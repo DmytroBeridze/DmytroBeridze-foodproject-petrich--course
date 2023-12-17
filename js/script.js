@@ -334,8 +334,6 @@ window.addEventListener("DOMContentLoaded", () => {
     paginationElements.push(paginationElement);
   }
 
-  // const paginationElements = document.querySelectorAll(".paginationItem");
-
   // pagination toggle fnc
   const paginationToggle = (arr) => {
     arr.forEach((elem) => elem.classList.remove("paginationItemActive"));
@@ -355,19 +353,35 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // -----------calculator
   const calculatingResult = document.querySelector(".calculating__result span");
-  console.log(localStorage.getItem("userOptions")?.userGender);
+  let userGender, userHeight, userWeight, userAge, userActivity;
 
-  let userGender =
-      JSON.parse(localStorage.getItem("userOptions"))?.userGender || "female",
-    userHeight =
-      JSON.parse(localStorage.getItem("userOptions"))?.userHeight || "",
-    userWeight =
-      JSON.parse(localStorage.getItem("userOptions"))?.userWeight || "",
-    userAge = JSON.parse(localStorage.getItem("userOptions"))?.userAge || "",
-    userActivity =
-      JSON.parse(localStorage.getItem("userOptions"))?.userActivity || 1.375;
+  if (localStorage.getItem("gender")) {
+    userGender = localStorage.getItem("gender");
+  } else localStorage.setItem("gender", userGender);
 
-  // JSON.parse(localStorage.getItem("userOptions")).userActivity || 1.375;
+  if (localStorage.getItem("activity")) {
+    userActivity = localStorage.getItem("activity");
+  } else localStorage.setItem("activity", userActivity);
+
+  const initialStateSetting = (selector, activeClass) => {
+    document.querySelectorAll(`${selector} div`).forEach((elem) => {
+      elem.classList.remove(activeClass);
+
+      if (elem.getAttribute("id") == localStorage.getItem("gender")) {
+        elem.classList.add(activeClass);
+      }
+      if (
+        elem.getAttribute("data-userInfo") == localStorage.getItem("activity")
+      ) {
+        elem.classList.add(activeClass);
+      }
+    });
+  };
+  initialStateSetting("#gender", "calculating__choose-item_active");
+  initialStateSetting(
+    ".calculating__choose_big",
+    "calculating__choose-item_active"
+  );
 
   const caloriesCalculate = () => {
     if (
@@ -390,42 +404,8 @@ window.addEventListener("DOMContentLoaded", () => {
         (447.6 + 9.2 * userWeight + 3.1 * userHeight - 4.3 * userAge) *
           userActivity
       );
-    storageDataet();
   };
   caloriesCalculate();
-
-  // getStorage
-  function storageDataet() {
-    const userDataLcalSave = {
-      userGender,
-      userHeight,
-      userWeight,
-      userAge,
-      userActivity,
-    };
-
-    localStorage.setItem("userOptions", JSON.stringify(userDataLcalSave));
-
-    document
-      .querySelector(".calculating__choose-item")
-      .classList.remove("calculating__choose-item_active");
-
-    document
-      .querySelector(`#${userDataLcalSave.userGender}`)
-      .classList.add("calculating__choose-item_active");
-
-    document
-      .querySelector(
-        `.calculating__choose-item[data-userInfo= "${userDataLcalSave.userActivity}" ]`
-      )
-      .classList.add("calculating__choose-item_active");
-
-    document.querySelector("#height").value = userHeight;
-    document.querySelector("#weight").value = userWeight;
-    document.querySelector("#age").value = userAge;
-  }
-  storageDataet();
-  // ---//getStorage
 
   const getUserData = (selector, activeClass) => {
     const container = document.querySelector(selector),
@@ -434,7 +414,15 @@ window.addEventListener("DOMContentLoaded", () => {
       if (e.target !== container) {
         if (e.target.getAttribute("data-userInfo")) {
           userActivity = +e.target.getAttribute("data-userInfo");
-        } else userGender = e.target.getAttribute("id");
+          localStorage.setItem(
+            "activity",
+            +e.target.getAttribute("data-userInfo")
+          );
+        } else {
+          userGender = e.target.getAttribute("id");
+          localStorage.setItem("gender", e.target.getAttribute("id"));
+        }
+
         elements.forEach((elem) => elem.classList.remove(activeClass));
         e.target.classList.add(activeClass);
       }

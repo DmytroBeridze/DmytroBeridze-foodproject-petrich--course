@@ -354,14 +354,13 @@ window.addEventListener("DOMContentLoaded", () => {
   // -----------calculator
   const calculatingResult = document.querySelector(".calculating__result span");
   let userGender, userHeight, userWeight, userAge, userActivity;
-
   if (localStorage.getItem("gender")) {
     userGender = localStorage.getItem("gender");
-  } else localStorage.setItem("gender", userGender);
+  } else localStorage.setItem("gender", "female");
 
   if (localStorage.getItem("activity")) {
     userActivity = localStorage.getItem("activity");
-  } else localStorage.setItem("activity", userActivity);
+  } else localStorage.setItem("activity", "1.375");
 
   const initialStateSetting = (selector, activeClass) => {
     document.querySelectorAll(`${selector} div`).forEach((elem) => {
@@ -436,11 +435,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const inputs = document.querySelectorAll(`${selector} input`);
     inputs.forEach((elem) =>
       elem.addEventListener("input", (e) => {
-        // проверка на ввод цифр
-        if (e.target.value.match(/\D/g)) {
-          elem.style.border = "1px solid red";
-        } else elem.style.border = "none";
-
         switch (e.target.getAttribute("id")) {
           case "height":
             userHeight = +e.target.value;

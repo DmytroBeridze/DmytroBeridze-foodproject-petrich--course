@@ -334,8 +334,6 @@ window.addEventListener("DOMContentLoaded", () => {
     paginationElements.push(paginationElement);
   }
 
-  // const paginationElements = document.querySelectorAll(".paginationItem");
-
   // pagination toggle fnc
   const paginationToggle = (arr) => {
     arr.forEach((elem) => elem.classList.remove("paginationItemActive"));
@@ -355,11 +353,34 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // -----------calculator
   const calculatingResult = document.querySelector(".calculating__result span");
-  let userGender = "female",
-    userHeight,
-    userWeight,
-    userAge,
-    userActivity = 1.375;
+  let userGender, userHeight, userWeight, userAge, userActivity;
+  if (localStorage.getItem("gender")) {
+    userGender = localStorage.getItem("gender");
+  } else localStorage.setItem("gender", "female");
+
+  if (localStorage.getItem("activity")) {
+    userActivity = localStorage.getItem("activity");
+  } else localStorage.setItem("activity", "1.375");
+
+  const initialStateSetting = (selector, activeClass) => {
+    document.querySelectorAll(`${selector} div`).forEach((elem) => {
+      elem.classList.remove(activeClass);
+
+      if (elem.getAttribute("id") == localStorage.getItem("gender")) {
+        elem.classList.add(activeClass);
+      }
+      if (
+        elem.getAttribute("data-userInfo") == localStorage.getItem("activity")
+      ) {
+        elem.classList.add(activeClass);
+      }
+    });
+  };
+  initialStateSetting("#gender", "calculating__choose-item_active");
+  initialStateSetting(
+    ".calculating__choose_big",
+    "calculating__choose-item_active"
+  );
 
   const caloriesCalculate = () => {
     if (
@@ -392,7 +413,15 @@ window.addEventListener("DOMContentLoaded", () => {
       if (e.target !== container) {
         if (e.target.getAttribute("data-userInfo")) {
           userActivity = +e.target.getAttribute("data-userInfo");
-        } else userGender = e.target.getAttribute("id");
+          localStorage.setItem(
+            "activity",
+            +e.target.getAttribute("data-userInfo")
+          );
+        } else {
+          userGender = e.target.getAttribute("id");
+          localStorage.setItem("gender", e.target.getAttribute("id"));
+        }
+
         elements.forEach((elem) => elem.classList.remove(activeClass));
         e.target.classList.add(activeClass);
       }

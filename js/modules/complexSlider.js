@@ -90,5 +90,4 @@ const complex = ({
   });
 };
 
-// module.exports = complex;
 export default complex;

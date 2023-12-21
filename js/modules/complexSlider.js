@@ -1,12 +1,20 @@
-const complex = () => {
+const complex = ({
+  sliderSelector,
+  sliderWrapper,
+  slide,
+  buttonPrev,
+  buttonNext,
+  current,
+  total,
+}) => {
   // ----------------complex slider
-  const mainSlider = document.querySelector(".offer__slider"),
-    offerSliderWrapper = document.querySelector(".offer__slider-wrapper"),
-    offerSlides = document.querySelectorAll(".offer__slide"),
-    sliderPrev = document.querySelector(".offer__slider-prev"),
-    sliderNext = document.querySelector(".offer__slider-next"),
-    currentCounter = document.querySelector("#current"),
-    totaltCounter = document.querySelector("#total"),
+  const mainSlider = document.querySelector(sliderSelector),
+    offerSliderWrapper = document.querySelector(sliderWrapper),
+    offerSlides = document.querySelectorAll(slide),
+    sliderPrev = document.querySelector(buttonPrev),
+    sliderNext = document.querySelector(buttonNext),
+    currentCounter = document.querySelector(current),
+    totaltCounter = document.querySelector(total),
     width = mainSlider.clientWidth;
   let counter = 0,
     pageCount = 0;
@@ -82,4 +90,5 @@ const complex = () => {
   });
 };
 
-module.exports = complex;
+// module.exports = complex;
+export default complex;

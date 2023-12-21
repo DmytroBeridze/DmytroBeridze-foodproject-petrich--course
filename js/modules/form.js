@@ -1,26 +1,19 @@
-const fetchSendForm = () => {
-  // -----------------------fetch-send-form
+import { openModal, closeModal } from "./modalWindow";
+import { fetchRequest } from "../services/service.js";
+
+// --------------------------form
+const form = (modalSelector, modalDialogSelector, timeoutOpenModal) => {
   const statusMessage = {
     load: "./img/modal/spinner.svg",
     success: "Success",
     error: "Error",
   };
 
-  const fetchRequest = async (method, url, data) => {
-    const response = await fetch(url, {
-      method: method,
-      headers: { "Content-type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    return await response.text();
-  };
-
-  const prevWindow = document.querySelector(".modal__dialog"),
-    container = document.querySelector(".modal"),
+  const prevWindow = document.querySelector(modalDialogSelector),
+    container = document.querySelector(modalSelector),
     messageWindow = document.createElement("div");
 
-  const showStatusFormRequest = (data, openModal) => {
+  const showStatusFormRequest = (data) => {
     prevWindow.classList.add("tabsHide");
     messageWindow.classList.add("modal__dialog");
     messageWindow.innerHTML = `
@@ -30,10 +23,9 @@ const fetchSendForm = () => {
       </div>
       `;
     container.append(messageWindow);
-    openModal();
+    openModal(modalSelector, timeoutOpenModal);
   };
-
-  function sendForm(method, url, closeModal, openModal) {
+  function sendForm(method, url) {
     const allForms = document.forms;
     for (let form of allForms) {
       form.addEventListener("submit", (e) => {
@@ -47,11 +39,11 @@ const fetchSendForm = () => {
           jsonFormData = Object.fromEntries(formData);
         fetchRequest(method, url, jsonFormData)
           .then((res) => {
-            showStatusFormRequest(statusMessage.success, openModal);
+            showStatusFormRequest(statusMessage.success);
             console.log(res);
           })
           .catch((error) => {
-            showStatusFormRequest(statusMessage.error, openModal);
+            showStatusFormRequest(statusMessage.error);
             console.log(error);
           })
           .finally(() => {
@@ -61,10 +53,13 @@ const fetchSendForm = () => {
               prevWindow.classList.remove("tabsHide");
               prevWindow.classList.add("tabsShow");
               form.reset();
-              closeModal();
+              closeModal(modalSelector);
             }, 2000);
           });
       });
     }
   }
+  sendForm("POST", "http://localhost:3000/requests");
 };
+
+export default form;

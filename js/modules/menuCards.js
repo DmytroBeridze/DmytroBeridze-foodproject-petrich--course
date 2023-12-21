@@ -1,16 +1,5 @@
-const menuCards = () => {
-  // ----------------------menu cards
-  const fetchMenuCards = async (url, method) => {
-    const response = await fetch(url, {
-      method: method,
-      headers: { "Content-type": "application/json" },
-    });
-    if (!response.ok) {
-      throw new Error(`Error request: ${response.status}`);
-    }
-    return await response.json();
-  };
-
+import { fetchMenuCards } from "../services/service";
+const menuCards = (url, containerSelector) => {
   class MenuCards {
     constructor(containerSelector, img, alt, subtitle, description, price) {
       this.containerSelector = document.querySelector(containerSelector);
@@ -45,12 +34,12 @@ const menuCards = () => {
       this.price = this.price * this.transfer;
     }
   }
-  fetchMenuCards("http://localhost:3000/menu", "GET")
+  fetchMenuCards(url, "GET")
     .then((data) =>
       data.forEach(({ img, altimg, title, descr, price }) => {
         // let { img, altimg, title, descr, price } = elem;
         new MenuCards(
-          ".menu__field .container",
+          containerSelector,
           img,
           altimg,
           title,
@@ -62,4 +51,5 @@ const menuCards = () => {
     .catch((error) => console.log(error.message));
 };
 
-module.exports = menuCards;
+// module.exports = menuCards;
+export default menuCards;

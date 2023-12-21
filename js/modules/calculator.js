@@ -1,6 +1,13 @@
-const calculator = () => {
+const calculator = (
+  result,
+  genderBlock,
+  activeBlock,
+  constitutionBlock,
+  activeClass
+) => {
   // -----------calculator
-  const calculatingResult = document.querySelector(".calculating__result span");
+
+  const calculatingResult = document.querySelector(`${result} span`);
   let userGender, userHeight, userWeight, userAge, userActivity;
 
   if (localStorage.getItem("gender")) {
@@ -25,11 +32,8 @@ const calculator = () => {
       }
     });
   };
-  initialStateSetting("#gender", "calculating__choose-item_active");
-  initialStateSetting(
-    ".calculating__choose_big",
-    "calculating__choose-item_active"
-  );
+  initialStateSetting(genderBlock, activeClass);
+  initialStateSetting(activeBlock, activeClass);
 
   const caloriesCalculate = () => {
     if (
@@ -77,8 +81,8 @@ const calculator = () => {
       caloriesCalculate();
     });
   };
-  getUserData("#gender", "calculating__choose-item_active");
-  getUserData(".calculating__choose_big", "calculating__choose-item_active");
+  getUserData(genderBlock, activeClass);
+  getUserData(activeBlock, activeClass);
 
   const getUserConstitution = (selector) => {
     const inputs = document.querySelectorAll(`${selector} input`);
@@ -100,7 +104,7 @@ const calculator = () => {
     );
   };
 
-  getUserConstitution(".calculating__choose_medium");
+  getUserConstitution(constitutionBlock);
 };
 
-module.exports = calculator;
+export default calculator;

@@ -251,6 +251,7 @@ a {
 }
 .offer__slider {
   width: 650px;
+  /* width: 650px; */
   margin-top: 50px;
   display: flex;
   flex-direction: column;
